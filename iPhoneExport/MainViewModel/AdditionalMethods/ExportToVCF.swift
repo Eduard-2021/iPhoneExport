@@ -19,8 +19,13 @@ class ExportToVCF {
             FN:\(c.first) \(c.last)
             \(c.organization.map { "ORG:\($0)" } ?? "")
             \(c.note.map { "NOTE:\($0)" } ?? "")
-            \(c.birthday.map { "BDAY:\($0)" } ?? "")
+            \(c.birthday.map { "BDAY:\($0)" } ?? "")\n
             """
+            print("\(c.last);\(c.first)")
+            
+            if let birthdayNew = c.birthday {
+                print(birthdayNew)
+            }
 
             for (label, phone) in c.phones {
                 vcf += "TEL;TYPE=\(label):\(phone)\n"
@@ -33,16 +38,17 @@ class ExportToVCF {
             }
 
             vcf += "END:VCARD\n\n"
+            
+            if let birthdayNew = c.birthday {
+                print(birthdayNew)
+            }
         }
         do {
             try vcf.write(to: vcfOutputPath, atomically: true, encoding: .utf8)
-            print("✅ Контакти експортовано: \(vcfOutputPath.path)")
+            print("Contacts exported: \(vcfOutputPath.path)")
             return true
         } catch {
             return false
         }
     }
-    
-    
-    
 }

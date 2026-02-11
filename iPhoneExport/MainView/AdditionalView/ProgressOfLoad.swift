@@ -17,6 +17,7 @@ struct ProgressOfLoad: View {
             Spacer()
             ProgressView()
                 .scaleEffect(1.5, anchor: .center)
+                .colorMultiply(color)
                 .colorInvert()
             Spacer()
         }

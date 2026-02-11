@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct Contact {
     var first: String
     var last: String

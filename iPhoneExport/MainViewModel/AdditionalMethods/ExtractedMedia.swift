@@ -11,22 +11,19 @@ import SQLite3
 
 class ExtractedMedia {
     
-    func performExtraction(backupDir: URL, mediaOutputDir: URL){
+    func performExtraction(folderForBackupURL: URL, mediaOutputDir: URL){
 
         let fileManager = FileManager.default
         
-        // MARK: - Відкриваємо Manifest.db
-        let manifestDBPath = backupDir.appendingPathComponent("Manifest.db").path
+        let manifestDBPath = folderForBackupURL.appendingPathComponent("Manifest.db").path
         var db: OpaquePointer?
 
         if sqlite3_open(manifestDBPath, &db) != SQLITE_OK {
-            print("❌ Не вдалося відкрити Manifest.db")
             exit(1)
         }
 
         defer { sqlite3_close(db) }
 
-        // MARK: - SQL-запит для фото/відео
         let query = """
         SELECT fileID, relativePath
         FROM Files
@@ -39,13 +36,10 @@ class ExtractedMedia {
 
         var stmt: OpaquePointer?
         if sqlite3_prepare_v2(db, query, -1, &stmt, nil) != SQLITE_OK {
-            print("❌ Помилка SQL-запиту: \(String(cString: sqlite3_errmsg(db)))")
+            print("SQL query error: \(String(cString: sqlite3_errmsg(db)))")
             exit(1)
         }
 
-        print("🔍 Пошук медіафайлів у резервній копії...")
-
-        // MARK: - Копіювання
         var extractedCount = 0
         var skippedCount = 0
         var seenDestinations = Set<String>()
@@ -58,7 +52,7 @@ class ExtractedMedia {
             let relativePath = String(cString: relPathCStr)
 
             let subdir = String(fileID.prefix(2))
-            let srcPath = backupDir.appendingPathComponent("\(subdir)/\(fileID)").path
+            let srcPath = folderForBackupURL.appendingPathComponent("\(subdir)/\(fileID)").path
 
             let destPath = mediaOutputDir.appendingPathComponent(relativePath).path
             let destFolder = (destPath as NSString).deletingLastPathComponent
@@ -71,7 +65,7 @@ class ExtractedMedia {
 
             guard fileManager.fileExists(atPath: srcPath) else {
                 skippedCount += 1
-                print("⚠️ Не знайдено файл: \(relativePath)")
+                print("File not found: \(relativePath)")
                 continue
             }
 
@@ -82,17 +76,14 @@ class ExtractedMedia {
                 print("✅ \(relativePath)")
                 extractedCount += 1
             } catch {
-                print("⚠️ Помилка копіювання \(relativePath): \(error.localizedDescription)")
+                print("Copy error \(relativePath): \(error.localizedDescription)")
                 skippedCount += 1
             }
         }
 
         sqlite3_finalize(stmt)
 
-        // MARK: - Результат
-        print("\n🎉 Витяг завершено!")
-        print("📁 Файли збережено в: \(mediaOutputDir.path)")
-        print("✅ Успішно витягнуто: \(extractedCount)")
-        print("⚠️ Пропущено або дублікати: \(skippedCount)")
+        print("Extraction completed!")
+        print("Successfully extracted:\(extractedCount)")
     }
 }
