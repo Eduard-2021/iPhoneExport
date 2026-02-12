@@ -96,7 +96,7 @@ struct MainView: View {
                         mainViewModel: mainViewModel)
         .padding()
         .background(
-            Image("BackGroung1024-mac")
+            Image("BackGroung1024-macNew")
                 .resizable()
 //                .opacity(0.5)
                 .frame(width: Constants.widthOfBigButton*2, height: Constants.widthOfBigButton*2)
@@ -105,6 +105,11 @@ struct MainView: View {
         .onAppear(){
             mainViewModel.initialization()
         }
+        .background(
+            Image("iPhoneExportBackground")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+        )
     }
 }
 
