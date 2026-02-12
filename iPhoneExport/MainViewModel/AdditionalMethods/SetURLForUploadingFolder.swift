@@ -1,9 +1,3 @@
-//
-//  setURLForScreenshotFolder.swift
-//  iPhoneExport
-//
-//  Created by Macintosh HD on 12.11.2025.
-//
 
 import SwiftUI
 
@@ -40,7 +34,7 @@ class SetURLForUploadingFolder {
         }
         
         if let folderForUploadingURL = URL(string: folderForUploadingString), isCorrectURL {
-            readAndWriteFiles.writeCapabilityCheck(folderForScreenshotURL: folderForUploadingURL){ isFolderForUploadingCorrect in
+            readAndWriteFiles.writeCapabilityCheck(folderForUploadingURL: folderForUploadingURL){ isFolderForUploadingCorrect in
                 if isFolderForUploadingCorrect {
                     savePathAndTurnToStandardMode(folderForUploadingURL: folderForUploadingURL)
                 } else {

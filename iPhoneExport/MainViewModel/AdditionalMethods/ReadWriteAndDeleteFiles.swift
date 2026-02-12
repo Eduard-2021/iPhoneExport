@@ -15,8 +15,8 @@ enum FileSaveError: Error {
 
 class ReadWriteAndDeleteFiles {
     
-    func writeCapabilityCheck(folderForScreenshotURL: URL, completionHandler: @escaping (Bool) ->()){
-        let fileURL = folderForScreenshotURL.appendingPathComponent("Test")
+    func writeCapabilityCheck(folderForUploadingURL: URL, completionHandler: @escaping (Bool) ->()){
+        let fileURL = folderForUploadingURL.appendingPathComponent("Test")
 
         do {
             try Data().write(to: fileURL)
