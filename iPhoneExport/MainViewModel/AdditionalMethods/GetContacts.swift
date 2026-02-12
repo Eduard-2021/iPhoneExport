@@ -41,7 +41,8 @@ class GetContacts {
         }
 
          let multiQuery = "SELECT record_id, property, value FROM ABMultiValue;"
-                 
+         var listOfContactsThatHasDataAboutBirthday: [Int] = []
+        
          var multiStmt: OpaquePointer?
          if sqlite3_prepare_v2(db, multiQuery, -1, &multiStmt, nil) == SQLITE_OK {
              while sqlite3_step(multiStmt) == SQLITE_ROW {
@@ -50,6 +51,13 @@ class GetContacts {
                  let value = sqlite3_column_text(multiStmt, 2).flatMap { String(cString: $0) } ?? ""
                  
                  guard var contact = contacts[personId], !value.isEmpty else { continue }
+
+                 if let birthday = contact.birthday, listOfContactsThatHasDataAboutBirthday.contains(where: { $0 == personId }) == false {
+                     let birthdayNew = convertBirthdayToVCardFormat(birthday)
+                     contact.birthday = birthdayNew
+                     listOfContactsThatHasDataAboutBirthday.append(personId)
+                     print(birthdayNew!)
+                 }
                  
                  print(value)
                  
@@ -74,6 +82,20 @@ class GetContacts {
              sqlite3_finalize(multiStmt)
          }
         return Array(contacts.values)
+    }
+    
+    func convertBirthdayToVCardFormat(_ birthday: String?) -> String? {
+        guard let birthday = birthday,
+              let timestamp = Double(birthday) else { return birthday }
+
+        // Конвертуємо UNIX timestamp у дату
+        let date = Date(timeIntervalSinceReferenceDate: timestamp)
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+
+        return formatter.string(from: date)
     }
     
     
@@ -122,21 +144,6 @@ class GetContacts {
         return contacts
     }
     
-    
-    
-    func convertBirthdayToVCardFormat(_ birthday: String?) -> String? {
-        guard let birthday = birthday,
-              let timestamp = Double(birthday) else { return birthday }
-
-        // Конвертуємо UNIX timestamp у дату
-        let date = Date(timeIntervalSince1970: timestamp)
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-
-        return formatter.string(from: date)
-    }
     
     
 }
