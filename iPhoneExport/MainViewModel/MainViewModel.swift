@@ -59,6 +59,7 @@ class MainViewModel: ObservableObject {
     var processMain: Process?
     var resultOfCreateBackup = (true,"")
     var isfileWithPhoneNumberCreated = false
+    
     var timer: Timer.TimerPublisher?
     var cancellable: AnyCancellable?
 
@@ -196,6 +197,7 @@ class MainViewModel: ObservableObject {
                     self.isAllowAnyTouch = true
                     self.isShowAlert = true
                     self.createAndDeleteFolder.deleteTempFolder(documentsURL: commonFolderForUploadingWithFullPathURL, tempFolder: ".TEMP")
+                    self.initVariable()
                 }
             }
         }
@@ -205,5 +207,15 @@ class MainViewModel: ObservableObject {
         exit(1)   
     }
     
-    func runUploadingMedia(){}
+    func initVariable(){
+        messageOfAlert = "Export completed successfully"
+        answerFromAlert = ""
+        
+        phoneNumber = ""
+        phoneIMEI = ""
+        phoneUDID = ""
+        
+        resultOfCreateBackup = (true,"")
+        isfileWithPhoneNumberCreated = false
+    }
 }
