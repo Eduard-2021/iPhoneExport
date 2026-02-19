@@ -23,5 +23,6 @@ class Constants {
     static let nameAOfFileWithPhoneNumber = "8c43dc290f050af07864f60b9239dab6c1da21a5"
     static let nameOfFileWithContacts = "31bb7ba8914766d4ba40d6dfb6113c8b614be442"
     static let nameOfFileWithPhoneBook = "3d0d7e5fb2ce288813306e4d4636395e047a3d28"
+    static let nameOfFileWithWhatsAppData = "7c7fba66680ef796b916b067077cc246adacf01d"
     
 }

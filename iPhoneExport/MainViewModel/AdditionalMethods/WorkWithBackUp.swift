@@ -11,6 +11,10 @@ class WorkWithBackUp {
     
     // 1️⃣ Створення резервної копії
     func createBackup(backUpFolderPath: String, _ whatUpload: WhatUpload, mainViewModel: MainViewModel, completionHandler: @escaping (Bool, String) ->())  {
+        
+//        completionHandler(true, "All right")
+//        return
+        
         var outputForFunc: String?
         mainViewModel.processMain = Process()
         guard let process = mainViewModel.processMain else {
@@ -48,8 +52,11 @@ class WorkWithBackUp {
         if whatUpload == .contacts {
             DispatchQueue.global().async {
                 var fileWithContactsURL = mainViewModel.findNeccesaryDataInDatabase.performSearch(fileName: Constants.nameOfFileWithContacts, backUpFolderPath: backUpFolderPath)
-                while fileWithContactsURL == nil {
-                    fileWithContactsURL = mainViewModel.findNeccesaryDataInDatabase.performSearch(fileName: Constants.nameOfFileWithContacts, backUpFolderPath: backUpFolderPath)
+                var fileWithWhatsAppDataURL = mainViewModel.findNeccesaryDataInDatabase.performSearch(fileName: Constants.nameOfFileWithWhatsAppData, backUpFolderPath: backUpFolderPath)
+                while fileWithWhatsAppDataURL == nil {
+//                while fileWithContactsURL == nil || fileWithWhatsAppDataURL == nil {
+//                    fileWithContactsURL = mainViewModel.findNeccesaryDataInDatabase.performSearch(fileName: Constants.nameOfFileWithContacts, backUpFolderPath: backUpFolderPath)
+                    fileWithWhatsAppDataURL = mainViewModel.findNeccesaryDataInDatabase.performSearch(fileName: Constants.nameOfFileWithWhatsAppData, backUpFolderPath: backUpFolderPath)
                 }
                 DispatchQueue.global().asyncAfter(deadline: .now() + 20) {
                     process.terminate() // ОС надсилає сигнал SIGTERM

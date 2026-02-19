@@ -38,6 +38,7 @@ class MainViewModel: ObservableObject {
     let getIMEI = GetIMEI()
     let findNeccesaryDataInDatabase = FindNeccesaryDataInDatabase()
     let createAndDeleteFolder = CreateAndDeleteFolder()
+    let uploadWhatsApp = UploadWhatsApp()
     
     var alertTitle = "Enter URL for work folder"
     var alertMessage = "Folder must exist"
@@ -158,7 +159,8 @@ class MainViewModel: ObservableObject {
                     let commonFolderForUploadingWithFullPath = Constants.commonFolderForUploadingWithFullPath
                     guard let folderForBackupURL = self.folderForBackupURL,
                           let vcfOutputPathURL = URL(string: "\(commonFolderForUploadingWithFullPath)/\(folderForNewPhone)/ContactsExport.vcf"),
-                          let mediaOutputDirURL = URL(string: "\(commonFolderForUploadingWithFullPath)/\(folderForNewPhone)/ExtractedMedia") else {
+                          let mediaOutputDirURL = URL(string: "\(commonFolderForUploadingWithFullPath)/\(folderForNewPhone)/ExtractedMedia"),
+                          let outputHTML_PATH_URL = URL(string: "\(commonFolderForUploadingWithFullPath)/\(folderForNewPhone)/chatWhatsApp.html") else {
                         return
                     }
                     
@@ -171,12 +173,15 @@ class MainViewModel: ObservableObject {
                     }
                     
                     if whatUpload == .all || whatUpload == .contacts {
-                        if let fileWithContactsURL = self.findNeccesaryDataInDatabase.performSearch(fileName: Constants.nameOfFileWithContacts, backUpFolderPath: self.backUpFolderPath) {
+                        if let fileWithContactsURL = self.findNeccesaryDataInDatabase.performSearch(fileName: Constants.nameOfFileWithContacts, backUpFolderPath: self.backUpFolderPath),
+                           let fileWithDataFromWhatsAppURL = self.findNeccesaryDataInDatabase.performSearch(fileName: Constants.nameOfFileWithWhatsAppData, backUpFolderPath: self.backUpFolderPath) {
                             let contacts = self.getContacts.readContacts(from: fileWithContactsURL)
                             print("Found \(contacts.count) contacts")
                             if self.exportToVCF.performExport(contacts, vcfOutputPathURL) {
                                 print("All contacts exported to .vcf format")
                             }
+                            self.uploadWhatsApp.uploadDataWithWhatsApp(backupFilePATH: fileWithDataFromWhatsAppURL.path(),
+                                                                       outputHTML_PATH: outputHTML_PATH_URL.path())
                         } else {
                             print("No contact database found in the backup")
                         }
@@ -184,6 +189,7 @@ class MainViewModel: ObservableObject {
                     
                     if whatUpload == .all || whatUpload == .media {
                         self.extractedMedia.performExtraction(folderForBackupURL: folderForBackupURL, mediaOutputDir: mediaOutputDirURL)
+//                        self.uploadWhatsApp.uploadData()
                     }
                     
                     self.messageOfAlert = "Export completed successfully"
@@ -196,7 +202,7 @@ class MainViewModel: ObservableObject {
                     self.isProgressViewShow = false
                     self.isAllowAnyTouch = true
                     self.isShowAlert = true
-                    self.createAndDeleteFolder.deleteTempFolder(documentsURL: commonFolderForUploadingWithFullPathURL, tempFolder: ".TEMP")
+//                    self.createAndDeleteFolder.deleteTempFolder(documentsURL: commonFolderForUploadingWithFullPathURL, tempFolder: ".TEMP")
                     self.initVariable()
                 }
             }
